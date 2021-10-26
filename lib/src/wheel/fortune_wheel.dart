@@ -60,7 +60,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   final VoidCallback onFling;
 
   double _getAngle(double progress) {
-    return 2 * Math.pi * rotationCount * progress;
+    return - Math.pi * (rotationCount * progress) * progress;
   }
 
   /// {@template flutter_fortune_wheel.FortuneWheel}
@@ -95,7 +95,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   @override
   Widget build(BuildContext context) {
     final rotateAnimCtrl = useAnimationController(duration: duration);
-    final rotateAnim = CurvedAnimation(parent: rotateAnimCtrl, curve: curve);
+    final rotateAnim = ReverseAnimation(rotateAnimCtrl);
 
     Future<void> animate() async {
       if (rotateAnimCtrl.isAnimating) {
