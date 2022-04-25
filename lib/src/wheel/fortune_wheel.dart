@@ -140,6 +140,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
 
     Future<void> animate() async {
       if (rotateAnimCtrl.isAnimating) {
+        await rotateAnimCtrl.forward(from: 0);
         return;
       }
 
