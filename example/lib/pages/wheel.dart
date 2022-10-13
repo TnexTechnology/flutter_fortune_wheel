@@ -24,39 +24,37 @@ class FortuneWheelPage extends HookWidget {
       );
     }
 
-    return AppLayout(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            alignmentSelector,
-            SizedBox(height: 8),
-            RollButtonWithPreview(
-              selected: selectedIndex,
-              items: Constants.fortuneValues,
-              onPressed: isAnimating.value ? null : handleRoll,
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          alignmentSelector,
+          SizedBox(height: 8),
+          RollButtonWithPreview(
+            selected: selectedIndex,
+            items: Constants.fortuneValues,
+            onPressed: isAnimating.value ? null : handleRoll,
+          ),
+          SizedBox(height: 8),
+          Expanded(
+            child: FortuneWheel(
+              selected: selected.stream,
+              onAnimationStart: () => isAnimating.value = true,
+              onAnimationEnd: () => isAnimating.value = false,
+              onFling: handleRoll,
+              indicators: [
+                FortuneIndicator(
+                  alignment: alignment.value,
+                  child: TriangleIndicator(),
+                ),
+              ],
+              items: [
+                for (var it in Constants.fortuneValues)
+                  FortuneItem(child: Text(it), onTap: () => print(it))
+              ],
             ),
-            SizedBox(height: 8),
-            Expanded(
-              child: FortuneWheel(
-                selected: selected.stream,
-                onAnimationStart: () => isAnimating.value = true,
-                onAnimationEnd: () => isAnimating.value = false,
-                onFling: handleRoll,
-                indicators: [
-                  FortuneIndicator(
-                    alignment: alignment.value,
-                    child: TriangleIndicator(),
-                  ),
-                ],
-                items: [
-                  for (var it in Constants.fortuneValues)
-                    FortuneItem(child: Text(it), onTap: () => print(it))
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

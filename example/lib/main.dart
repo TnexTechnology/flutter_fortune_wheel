@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
+import 'package:flutter_fortune_wheel_example/pages/wheel.dart';
 
-import 'common/common.dart';
-import 'router.gr.dart';
 import 'util/configure_non_web.dart'
     if (dart.library.html) 'util/configure_web.dart';
 import 'widgets/widgets.dart';
@@ -27,9 +26,13 @@ class ExamplePage extends StatefulWidget {
 class _ExamplePageState extends State<ExamplePage> {
   StreamController<int> selected = StreamController<int>();
 
+  StreamController<Duration> d = StreamController<Duration>();
+
   @override
   void dispose() {
     selected.close();
+    d.close();
+
     super.dispose();
   }
 
@@ -52,20 +55,26 @@ class _ExamplePageState extends State<ExamplePage> {
       ),
       body: GestureDetector(
         onTap: () {
+          print("HIHI");
           setState(() {
-            selected.add(
-              Fortune.randomInt(0, items.length),
-            );
+            d.add(Duration(seconds: 30));
+
+            // selected.add(
+            //   Fortune.randomInt(0, items.length),
+            // );
           });
         },
         child: Column(
           children: [
             Expanded(
               child: FortuneWheel(
+                animateFirst: true,
                 selected: selected.stream,
+                durationUpdate: d.stream,
                 items: [
                   for (var it in items) FortuneItem(child: Text(it)),
                 ],
+                duration: Duration(seconds: 5),
               ),
             ),
           ],
@@ -77,7 +86,7 @@ class _ExamplePageState extends State<ExamplePage> {
 
 void main() {
   configureApp();
-  runApp(DemoApp());
+  runApp(ExampleApp());
 }
 
 class DemoApp extends StatefulWidget {
@@ -86,21 +95,8 @@ class DemoApp extends StatefulWidget {
 }
 
 class _DemoAppState extends State<DemoApp> {
-  final _appRouter = AppRouter();
-
   @override
   Widget build(BuildContext context) {
-    return ThemeModeScope(
-      builder: (context, themeMode) {
-        return MaterialApp.router(
-          title: 'Fortune Wheel Demo',
-          theme: lightTheme,
-          darkTheme: darkTheme,
-          themeMode: themeMode,
-          routerDelegate: _appRouter.delegate(),
-          routeInformationParser: _appRouter.defaultRouteParser(),
-        );
-      },
-    );
+    return FortuneWheelPage();
   }
 }

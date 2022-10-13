@@ -72,6 +72,8 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   /// {@macro flutter_fortune_wheel.FortuneWidget.selected}
   final Stream<int> selected;
 
+  final Stream<Duration> durationUpdate;
+
   /// {@macro flutter_fortune_wheel.FortuneWidget.rotationCount}
   final int rotationCount;
 
@@ -120,6 +122,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
     required this.items,
     this.rotationCount = FortuneWidget.kDefaultRotationCount,
     this.selected = const Stream<int>.empty(),
+    this.durationUpdate = const Stream<Duration>.empty(),
     this.duration = FortuneWidget.kDefaultDuration,
     this.curve = FortuneCurve.spin,
     this.indicators = kDefaultIndicators,
@@ -155,10 +158,22 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
 
     final selectedIndex = useState<int>(0);
 
+
     useEffect(() {
       final subscription = selected.listen((event) {
         selectedIndex.value = event;
         animate();
+      });
+      return subscription.cancel;
+    }, []);
+
+    useEffect(() {
+      final subscription = durationUpdate.listen((event) {
+        print("HIHI 1");
+        rotateAnimCtrl.duration = event;
+        print("HIHI 1 ${rotateAnimCtrl.value}");
+
+        rotateAnimCtrl.forward(from: rotateAnimCtrl.value);
       });
       return subscription.cancel;
     }, []);
