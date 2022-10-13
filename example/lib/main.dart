@@ -28,6 +28,33 @@ class _ExamplePageState extends State<ExamplePage> {
 
   StreamController<Duration> d = StreamController<Duration>();
 
+  final items = <String>[
+    'Grogu',
+    'Mace Windu',
+    'Obi-Wan Kenobi',
+    'Han Solo',
+    'Luke Skywalker',
+    'Darth Vader',
+    'Yoda',
+    'Ahsoka Tano',
+  ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        selected.add(
+          Fortune.randomInt(0, items.length),
+        );
+      });
+
+    });
+
+  }
+
   @override
   void dispose() {
     selected.close();
@@ -38,16 +65,7 @@ class _ExamplePageState extends State<ExamplePage> {
 
   @override
   Widget build(BuildContext context) {
-    final items = <String>[
-      'Grogu',
-      'Mace Windu',
-      'Obi-Wan Kenobi',
-      'Han Solo',
-      'Luke Skywalker',
-      'Darth Vader',
-      'Yoda',
-      'Ahsoka Tano',
-    ];
+
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +86,7 @@ class _ExamplePageState extends State<ExamplePage> {
           children: [
             Expanded(
               child: FortuneWheel(
-                animateFirst: true,
+                animateFirst: false,
                 selected: selected.stream,
                 durationUpdate: d.stream,
                 items: [

@@ -54,7 +54,7 @@ class _WheelData {
 ///  * [FortuneWidget()], which automatically chooses a fitting widget
 ///  * [Fortune.randomItem], which helps selecting random items from a list
 ///  * [Fortune.randomDuration], which helps choosing a random duration
-class FortuneWheel extends HookWidget implements FortuneWidget {
+class FortuneWheel extends HookWidget implements FortuneWidget{
   /// The default value for [indicators] on a [FortuneWheel].
   /// Currently uses a single [TriangleIndicator] on [Alignment.topCenter].
   static const List<FortuneIndicator> kDefaultIndicators = <FortuneIndicator>[
@@ -138,22 +138,35 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
 
   @override
   Widget build(BuildContext context) {
+    var isCompleted = false;
     final rotateAnimCtrl = useAnimationController(duration: duration);
     final rotateAnim = ReverseAnimation(rotateAnimCtrl);
-    rotateAnimCtrl.addStatusListener((status) {
-      print("HIHI status = $status");
-
-      if(status == AnimationStatus.forward){
-        Future.microtask(() => onAnimationStart?.call());
-      }else if (status == AnimationStatus.completed){
+    final listener = (status){
+        if(status == AnimationStatus.forward){
+          Future.microtask(() => onAnimationStart?.call());
+        }else if (status == AnimationStatus.completed && !isCompleted){
+        print("HIHI status = $status");
+        isCompleted = true;
         Future.microtask(() => onAnimationEnd?.call());
-      }
-    });
+        }
+    };
+
 
     Future<void> animate() async {
       if (rotateAnimCtrl.isAnimating) {
         return;
       }
+
+      isCompleted = false;
+      // rotateAnimCtrl.addStatusListener((status) {
+      //   if(status == AnimationStatus.forward){
+      //     Future.microtask(() => onAnimationStart?.call());
+      //   }else if (status == AnimationStatus.completed && !isCompleted){
+      //     print("HIHI status = $status");
+      //     isCompleted = true;
+      //     Future.microtask(() => onAnimationEnd?.call());
+      //   }
+      // });
 
       // await Future.microtask(() => onAnimationStart?.call());
       await rotateAnimCtrl.forward(from: 0);
@@ -167,7 +180,6 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
 
     final selectedIndex = useState<int>(0);
 
-
     useEffect(() {
       final subscription = selected.listen((event) {
         selectedIndex.value = event;
@@ -180,10 +192,20 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
       final subscription = durationUpdate.listen((event) {
         print("HIHI 1");
         rotateAnimCtrl.duration = event;
-        print("HIHI 1 ${rotateAnimCtrl.value}");
-        rotateAnimCtrl.forward();
+        if (rotateAnimCtrl.isAnimating) {
+          print("HIHI 1 ${rotateAnimCtrl.value}");
+          rotateAnimCtrl.forward();
+        }
+
       });
       return subscription.cancel;
+    }, []);
+
+    useEffect(() {
+      rotateAnimCtrl.addStatusListener(listener);
+      return () => {
+        rotateAnimCtrl.removeStatusListener(listener)
+      };
     }, []);
 
     return PanAwareBuilder(
