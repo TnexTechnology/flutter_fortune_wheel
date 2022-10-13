@@ -140,15 +140,24 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   Widget build(BuildContext context) {
     final rotateAnimCtrl = useAnimationController(duration: duration);
     final rotateAnim = ReverseAnimation(rotateAnimCtrl);
+    rotateAnimCtrl.addStatusListener((status) {
+      print("HIHI status = $status");
+
+      if(status == AnimationStatus.forward){
+        Future.microtask(() => onAnimationStart?.call());
+      }else if (status == AnimationStatus.completed){
+        Future.microtask(() => onAnimationEnd?.call());
+      }
+    });
 
     Future<void> animate() async {
       if (rotateAnimCtrl.isAnimating) {
         return;
       }
 
-      await Future.microtask(() => onAnimationStart?.call());
+      // await Future.microtask(() => onAnimationStart?.call());
       await rotateAnimCtrl.forward(from: 0);
-      await Future.microtask(() => onAnimationEnd?.call());
+      // await Future.microtask(() => onAnimationEnd?.call());
     }
 
     useEffect(() {
@@ -172,8 +181,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
         print("HIHI 1");
         rotateAnimCtrl.duration = event;
         print("HIHI 1 ${rotateAnimCtrl.value}");
-
-        rotateAnimCtrl.forward(from: rotateAnimCtrl.value);
+        rotateAnimCtrl.forward();
       });
       return subscription.cancel;
     }, []);
