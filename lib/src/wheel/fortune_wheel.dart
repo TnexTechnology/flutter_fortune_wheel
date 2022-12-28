@@ -202,7 +202,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
 
         // rotateAnimCtrl.reset();
         rotateAnimCtrl.duration = event;
-        newRotationCount += 10*number;
+        newRotationCount += 10;
         number += 1;
         if (rotateAnimCtrl.isAnimating) {
           print("HIHI 1 ${rotateAnimCtrl.value}");
