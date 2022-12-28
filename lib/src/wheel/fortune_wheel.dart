@@ -75,7 +75,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
   final Stream<Duration> durationUpdate;
 
   /// {@macro flutter_fortune_wheel.FortuneWidget.rotationCount}
-  final int rotationCount;
+  late final int rotationCount;
 
   /// {@macro flutter_fortune_wheel.FortuneWidget.duration}
   final Duration duration;
@@ -104,7 +104,11 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
   /// {@macro flutter_fortune_wheel.FortuneWidget.onFling}
   final VoidCallback? onFling;
 
-  double _getAngle(double progress) {
+  // double _getAngle(double progress) {
+  //   return - _math.pi * (rotationCount * progress) * progress;
+  // }
+
+  double _getAngle(double progress, int rotationCount) {
     return - _math.pi * (rotationCount * progress) * progress;
   }
 
@@ -141,6 +145,8 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
     var isCompleted = false;
     final rotateAnimCtrl = useAnimationController(duration: duration);
     final rotateAnim = ReverseAnimation(rotateAnimCtrl);
+    var newRotationCount = FortuneWidget.kDefaultRotationCount;
+    var number = 1;
     final listener = (status){
         if(status == AnimationStatus.forward){
           Future.microtask(() => onAnimationStart?.call());
@@ -191,10 +197,18 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
     useEffect(() {
       final subscription = durationUpdate.listen((event) {
         print("HIHI 1");
+        // rotateAnimCtrl.stop();
+        // rotateAnimCtrl = useAnimationController(duration: duration);
+
+        // rotateAnimCtrl.reset();
         rotateAnimCtrl.duration = event;
+        newRotationCount += 10*number;
+        number += 1;
         if (rotateAnimCtrl.isAnimating) {
           print("HIHI 1 ${rotateAnimCtrl.value}");
-          rotateAnimCtrl.forward(from: rotateAnimCtrl.value);
+          // rotateAnimCtrl.forward(from: rotateAnimCtrl.value);
+          rotateAnimCtrl.forward(from: 0);
+
         }
 
       });
@@ -232,7 +246,8 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
                   final selectedAngle =
                       -2 * _math.pi * (selectedIndex.value / items.length);
                   final panAngle = panState.distance * panFactor;
-                  final rotationAngle = _getAngle(rotateAnim.value);
+                  final rotationAngle = _getAngle(rotateAnim.value, newRotationCount);
+                  print("HIHI rotateAnim.value =  ${rotateAnim.value}");
 
                   final transformedItems = [
                     for (var i = 0; i < items.length; i++)

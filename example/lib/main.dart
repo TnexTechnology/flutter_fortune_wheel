@@ -6,7 +6,6 @@ import 'package:flutter_fortune_wheel_example/pages/wheel.dart';
 
 import 'util/configure_non_web.dart'
     if (dart.library.html) 'util/configure_web.dart';
-import 'widgets/widgets.dart';
 
 class ExampleApp extends StatelessWidget {
   @override
@@ -27,6 +26,7 @@ class _ExamplePageState extends State<ExamplePage> {
   StreamController<int> selected = StreamController<int>();
 
   StreamController<Duration> d = StreamController<Duration>();
+  int duration = 30;
 
   final items = <String>[
     'Grogu',
@@ -46,9 +46,10 @@ class _ExamplePageState extends State<ExamplePage> {
 
     Future.delayed(const Duration(seconds: 3), () {
       setState(() {
-        selected.add(
-          Fortune.randomInt(0, items.length),
-        );
+        selected.add(0);
+        // selected.add(
+        //   Fortune.randomInt(0, items.length),
+        // );
       });
 
     });
@@ -75,7 +76,8 @@ class _ExamplePageState extends State<ExamplePage> {
         onTap: () {
           print("HIHI");
           setState(() {
-            d.add(Duration(seconds: 30));
+            duration+=15;
+            d.add(Duration(seconds: duration));
 
             // selected.add(
             //   Fortune.randomInt(0, items.length),
@@ -92,7 +94,7 @@ class _ExamplePageState extends State<ExamplePage> {
                 items: [
                   for (var it in items) FortuneItem(child: Text(it)),
                 ],
-                duration: Duration(seconds: 5),
+                duration: Duration(seconds: duration),
               ),
             ),
           ],
