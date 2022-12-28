@@ -145,8 +145,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
     var isCompleted = false;
     final rotateAnimCtrl = useAnimationController(duration: duration);
     final rotateAnim = ReverseAnimation(rotateAnimCtrl);
-    var newRotationCount = FortuneWidget.kDefaultRotationCount;
-    var number = 1;
+    var newRotationCount = 50;
     final listener = (status){
         if(status == AnimationStatus.forward){
           Future.microtask(() => onAnimationStart?.call());
@@ -203,7 +202,6 @@ class FortuneWheel extends HookWidget implements FortuneWidget{
         // rotateAnimCtrl.reset();
         rotateAnimCtrl.duration = event;
         newRotationCount += 10;
-        number += 1;
         if (rotateAnimCtrl.isAnimating) {
           print("HIHI 1 ${rotateAnimCtrl.value}");
           // rotateAnimCtrl.forward(from: rotateAnimCtrl.value);
